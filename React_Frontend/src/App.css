@@ -1,0 +1,159 @@
+.news_content {
+  font-size: 12px !important;
+  
+}
+
+.credibleBtn {
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+.fakeBtn {
+  margin-top: 20px;
+  margin-left: 5px;
+}
+
+
+#rowLayout {
+  display:flex;
+  flex-direction: col;
+}
+
+#navSidebar {
+  width:20rem;
+}
+
+#navTopbar {
+  margin-left: 20rem;
+}
+
+.main-body {
+  display: flex;
+  flex-direction: column;
+  background-color: #24313d;
+  min-height: 80rem;
+
+}
+
+
+
+.body {
+  display: flex;
+  flex-direction: column; 
+}
+
+.inner-body {
+  display: flex;
+  flex-direction: row;
+}
+
+.anotherRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.aColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.tweet-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  background-color: #2c4358;
+  margin-left: 0%;
+  margin-bottom: 0.5%;
+  border-radius: 20px;
+}
+
+.news_title {
+  display: flex;
+  color:aliceblue;
+  margin-left: 15px;
+  margin-bottom: 10px;
+  margin-right:15px;
+  font-weight: 400;
+}
+
+.tweet-body:hover { 
+  background-color: #1e2833;
+  border: #ffffff;
+}
+
+.picture {
+  margin-left: 15px;
+  margin-top: 20px;
+  margin-bottom:10px;
+  border-radius: 10%;
+  /* width:flex;
+  height:48px; */
+  width: flex;
+  height: 55px;
+}
+
+.name {
+  display: flex;
+  flex-direction: row;
+  margin-left: 15px;
+  margin-top: 18px;
+  margin-bottom: 0px;
+  height: 5px;
+  font-size: 20px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.6px;
+  color: #ffffff;
+}
+
+.classification {
+  display: flex;
+  flex-direction: row;
+  margin-left: 15px;
+  margin-top: 0px;
+  margin-bottom: 1%;
+  height: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.6px;  
+  color:gray;
+}
+
+.classificationUserVotes {
+  display: flex;
+  flex-direction: row;
+  margin-left: 10px;
+  margin-top: 20px;
+  margin-bottom: 1%;
+  height: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.6px;  
+  color:gray;
+}
+
+.news_content {
+  margin-left: 15px;
+  margin-top: 0%;
+  margin-bottom: 15px;
+  margin-right: 15px;
+  width: flex;
+  height: flex;
+  font-size: 14px;
+  font-weight: 100;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.6px;
+  color: #ffffff;
+}
