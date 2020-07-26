@@ -7,6 +7,4 @@ In order to access the Bing News Search API results, the variable BING_NEWS_API_
 There are several API calls to localhost:5000 in the code, such as http://localhost:5000/get_tweets. If you host our backend through different hosting, localhost:5000 would be replaced by the name of your hosting provider. For example, all references to localhost:5000 may be replaced with references to CUSTOM_API.herokuapp.com. It would look like: http://CUSTOM_API.herokuapp.com/get_tweets. 
 
 
-### 3] Additional sources helped in the development of this code
-For the frontend, we began with this: https://github.com/kakaly/twitter-feed, but then heavily modified it. We retained this author's MIT license. We also used libraries such as react-bootstrap.
 
