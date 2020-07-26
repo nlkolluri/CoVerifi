@@ -1,6 +1,6 @@
 # This is the backend service for CoVerifi, written in Python.
 ## Important Notes: 
-### 1] The Twitter functionality will not work without modification
+### 1] API keys are required for Twitter deployment
 This is because we have obscured the API keys for the Twitter API. Thus, new users will need to create a Twitter Developer account, obtain an API key, API secret key, Access Token, and Access Token Secret. Then, they will need to replace the fields consumer_key, consumer_secret, key, and secret in app.py with these values.
 ### 2] We recommend using a different Hugging Face detector API than provided in the code.
 In our code, we make API calls to https://huggingface.co/openai-detector, which was not intended to be used as an API but we obtained permission from the authors to use it as such on a small scale. However, Hugging Face has more recently released a set of APIs which are intended for this purpose: https://huggingface.co/roberta-base-openai-detector?text=I+like+you.+I+love+you and https://huggingface.co/roberta-large-openai-detector?text=I+like+you.+I+love+you. It appears that label 0 means "likely real" and label 1 means "likely machine-generated." If you are interested in sending large volumes of requests, their website (URL: https://huggingface.co/docs) says:
