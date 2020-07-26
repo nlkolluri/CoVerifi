@@ -12,4 +12,4 @@ Replace all API key placeholders (Firebase API key, Bing News Search API key) wi
 In the frontend project folder, which includes package.json and the src folder, perform the command "npm install". This will install the dependencies for the frontend. Next, perform the command "npm start"
 
 ## Additional sources helped in the development of this code
-For the frontend, we began with this: https://github.com/kakaly/twitter-feed, but then heavily modified it. We retained this author's MIT license. We also used tools such as news-please (URL: https://github.com/fhamborg/news-please) and tweepy (URL: https://github.com/tweepy/tweepy)
+For the frontend, we began with this a sample React Twitter Feed project (URL: https://github.com/kakaly/twitter-feed), but then heavily modified it. We retained this author's MIT license. We also used tools such as news-please (URL: https://github.com/fhamborg/news-please) and tweepy (URL: https://github.com/tweepy/tweepy)
