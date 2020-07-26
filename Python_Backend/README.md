@@ -8,4 +8,4 @@ In our code, we make API calls to https://huggingface.co/openai-detector, which 
 ### 3] Deploying to Heroku or another hosting provider is an important step.
 We have included our requirements.txt file and Procfile for easy deployment to Heroku. In its current state, our code is fully functional when deployed to Heroku. However, when running in a local environment, there are sometimes articles which cause the backend service to crash. Locally, you should be able to wait a few seconds, restart the backend service, and the web app will behave normally. On Heroku, if an article causes the error, the backend service automatically re-starts and the web app displays normal behavior.
 ### 4] Additional sources helped in the development of this code
-We used the tweepy library as well as the news-please library in the development of this code. 
+
