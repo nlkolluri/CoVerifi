@@ -1,5 +1,5 @@
 # CoVerifi: A COVID-19 News Verification System.
-This is the GitHub repository accompanying the paper "CoVerifi: A COVID-19 News Verification System."
+This is the GitHub repository accompanying the paper "CoVerifi: A COVID-19 News Verification System." Attached below is Figure 2 from the CoVerifi paper and Figure 3 from the CoVerifi paper, respectively. The Figure 2 shows COVID-19 news drawn from Bing News Search API and Figure 3 shows COVID-19 news drawn from Twitter.
 ![Figure 2 from CoVerifi Paper](https://github.com/nlkolluri/CoVerifi/blob/master/Figure2.jpg?raw=true)
 ![Figure 3 from CoVerifi Paper](https://github.com/nlkolluri/CoVerifi/blob/master/Figure3.jpg?raw=true)
 
