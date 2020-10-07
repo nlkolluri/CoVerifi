@@ -3,11 +3,11 @@ This is the GitHub repository accompanying the paper "CoVerifi: A COVID-19 News 
 
 
 ![Figure 2 from CoVerifi Paper](https://github.com/nlkolluri/CoVerifi/blob/master/Figure2.jpg?raw=true)
-*Above: Figure 2 from the CoVerifi paper: Shows COVID-19 news drawn from Bing News Search API*
+*Above: Figure 2 from the CoVerifi paper, which shows COVID-19 news drawn from Bing News Search API*
 
 
 ![Figure 3 from CoVerifi Paper](https://github.com/nlkolluri/CoVerifi/blob/master/Figure3.jpg?raw=true)
-*Above: Figure 3 from the CoVerifi paper: Shows COVID-19 news drawn from Twitter*
+*Above: Figure 3 from the CoVerifi paper, which shows COVID-19 news drawn from Twitter*
 
 
 
