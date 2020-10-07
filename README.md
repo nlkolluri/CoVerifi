@@ -1,5 +1,10 @@
 # CoVerifi: A COVID-19 News Verification System.
 This is the GitHub repository accompanying the paper "CoVerifi: A COVID-19 News Verification System."
+![Figure 2 from CoVerifi Paper](https://github.com/nlkolluri/CoVerifi/blob/master/Figure2.jpg?raw=true)
+![Figure 3 from CoVerifi Paper](https://github.com/nlkolluri/CoVerifi/blob/master/Figure3.jpg?raw=true)
+
+
+
 ## Backend Important Notes
 ### 1] API keys are required for Twitter deployment
 This is because we have obscured the API keys for the Twitter API. Thus, new users will need to create a Twitter Developer account, obtain an API key, API secret key, Access Token, and Access Token Secret. Then, they will need to replace the fields consumer_key, consumer_secret, key, and secret in app.py with these values.
