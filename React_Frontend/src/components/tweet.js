@@ -27,11 +27,35 @@ const Handle = (props) => {
 
 const Classification = (props) => {
   var colorOfIt = 'green';
-  if (props.classification.includes('Sad')|| props.classification.includes('Fake')) colorOfIt = 'red';
-
+  if (props.classification.includes('Machine-Generated') && !props.classification.includes('Human')) {
+      colorOfIt = 'red';
+    }
+  
   return (
     <div className="classification" >
       <p style={{color: colorOfIt}}>{props.classification}</p>
+    </div>
+  )
+}
+
+const Classification_CML = (props) => {
+  var colorOfThis = 'green';
+  if ( props.classification_CML.includes('Misleading') | props.classification_CML.includes('Machine') ) colorOfThis = 'red';
+
+  return (
+    <div className="classification" >
+      <p style={{color: colorOfThis}}>{props.classification_CML}</p>
+    </div>
+  )
+}
+
+const Classification_Twitter = (props) => {
+  var colorOfThis = 'green';
+  if ( props.classification_Twitter.includes('Automated')) colorOfThis = 'red';
+
+  return (
+    <div className="classification" >
+      <p style={{color: colorOfThis}}>{props.classification_Twitter}</p>
     </div>
   )
 }
@@ -166,8 +190,12 @@ class TweetBody extends React.Component {
             return "No users have voted yet"
     }
 
-    function reportCredible(){
+    async function reportCredible(){
       
+      let response = await fetch("https://ipapi.co/json");
+      let result = await response.json();
+      var thisIP = result.ip;
+
       var docKey = contentToShow.replace(/[’]/g, '').replace(/\W/g, ' ').replace( /\s\s+/g, ' ' ); //replaces apostrophes, non-alphanum chars
       var theFullText = contentToShow;
       if (props.fullTextOfNews !=null ){
@@ -177,18 +205,29 @@ class TweetBody extends React.Component {
       const db = firebase.firestore()
       var docRef = db.collection("userClassifications").doc(docKey);
       docRef.get().then(function(doc) {
+        
           if (doc.exists) {
-              console.log("Document data:", doc.data());
-              var thePosVotes = doc.data().posVotes;
-              docRef.update({
-                posVotes: thePosVotes+1
-              })
+              var currIp = doc.data().ip;
+              if (!currIp.includes(thisIP)){
+                console.log("Document data:", doc.data());
+              
+                var thePosVotes = doc.data().posVotes;
+                currIp = [...currIp, thisIP];
+                docRef.update({
+                  posVotes: thePosVotes+1,
+                  ip: currIp
+                })
+              } else {
+                alert("You have already voted!")
+              }
+              
           } else {
               console.log("No such document!");
               docRef.set({
                 "fullText": theFullText,
                 "posVotes": 1,
-                "negVotes": 0
+                "negVotes": 0,
+                "ip": [thisIP]
               })
           }
       }).catch(function(error) {
@@ -203,11 +242,16 @@ class TweetBody extends React.Component {
 
     }
 
-    function reportFake(){
+    async function reportFake(){
       if (contentToShow == null ) {
         console.log("Error reporting :(");
         return;
       }
+
+      let response = await fetch("https://ipapi.co/json");
+      let result = await response.json();
+      var thisIP = result.ip;
+
       var docKey = contentToShow.replace(/[’]/g, '').replace(/\W/g, ' ').replace( /\s\s+/g, ' ' ); //replaces apostrophes, non-alphanum chars
       var theFullText = contentToShow;
       if (props.fullTextOfNews !=null ){
@@ -217,17 +261,27 @@ class TweetBody extends React.Component {
       var docRef = db.collection("userClassifications").doc(docKey);
       docRef.get().then(function(doc) {
           if (doc.exists) {
+            var currIp = doc.data().ip;
+            if (!(currIp.includes(thisIP))) {
               console.log("Document data:", doc.data());
               var theNegVotes = doc.data().negVotes;
+              
+              currIp = [...currIp, thisIP];
               docRef.update({
-                negVotes: theNegVotes+1
+                negVotes: theNegVotes+1,
+                ip: currIp
               })
+            } else {
+              alert("You have already voted!")
+            }
+              
           } else {
               console.log("No such document!");
               docRef.set({
                 "fullText": theFullText,
                 "posVotes": 0,
-                "negVotes": 1
+                "negVotes": 1,
+                "ip": [thisIP]
               })
           }
       }).catch(function(error) {
@@ -267,6 +321,8 @@ class TweetBody extends React.Component {
                   <UserVotes news_content= {props.news_content} ></UserVotes>
                   </div>
                 <Classification classification = {props.classification}/>
+                <Classification_CML classification_CML = {props.classification_CML}/>
+                <Classification_Twitter classification_Twitter = {props.classification_Twitter}/>
               </div>
             </div>
             
