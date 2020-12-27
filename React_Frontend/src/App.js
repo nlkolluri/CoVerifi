@@ -47,6 +47,12 @@ class App extends Component {
 
 
   async getTwitterNews(){
+
+    this.setState(prevState => ({
+      users: []
+    })) 
+    //The above code prevents maintaining percentages
+
     const that=this; 
     var tempArray = new Array();
     let postBody = {
@@ -156,6 +162,12 @@ class App extends Component {
   }
 
   getRedditNews(){
+
+    this.setState(prevState => ({
+      users: []
+    })) 
+    //The above code prevents maintaining percentages
+
     const https = require('https')
     var options = {
       hostname: 'www.reddit.com/',
@@ -276,6 +288,11 @@ class App extends Component {
   
 
   getUser(newsType, querystring) {
+
+    this.setState(prevState => ({
+      users: []
+    })) 
+    //The above code prevents maintaining percentages
     
     var currentQuery = querystring;
     const https = require('https')
