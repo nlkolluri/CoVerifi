@@ -3,7 +3,7 @@ import { TweetBody } from './components/tweet.js'
 import {PullToRefresh, PullDownContent, ReleaseContent, RefreshContent} from "react-js-pull-to-refresh";
 import './App.css';
 import firebase from '././Firebase.js'
-import { Nav, Navbar, Form, Button, FormControl } from 'react-bootstrap'
+import { Nav, Navbar, Form, Button, FormControl, Jumbotron, Container } from 'react-bootstrap'
 
 const JSON5 = require('json5')
 var querystring = require('querystring')
@@ -19,6 +19,8 @@ var twitterNews = []
 var intendedState = "covidNews"
 var intendedQuery = ""
 const lengthCap = 600
+
+const base_URL = "http://localhost:5000/"
 var theSearchValue = ""
 
 class App extends Component {
@@ -52,7 +54,7 @@ class App extends Component {
     };
 
     try {
-     let response = await fetch('http://localhost:5000/get_tweets', {
+     let response = await fetch(base_URL + "get_tweets", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -69,6 +71,8 @@ class App extends Component {
           news_content:  result[i].tweetText,
           news_title: result[i].name + ' tweeted:',
           classification: 'Loading classification...',
+          classification_CML: 'Loading classification... (our model)',
+          classification_Twitter: 'N/A (Not Twitter Post)',
           description: "Pulling from website",
           userVotes: "User Votes: Loading"
         })
@@ -83,11 +87,12 @@ class App extends Component {
 
       for (var i=0; i<tempArray.length; i++){
         let postBody2 = {
-          tweetMessage: tempArray[i].news_content
+          tweetMessage: tempArray[i].news_content,
+          screenName: tempArray[i].name
         };
 
         try {
-         let response2 = await fetch('http://localhost:5000/process-tweet', {
+         let response2 = await fetch(base_URL + 'process-tweet', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -96,24 +101,44 @@ class App extends Component {
         });
         
         let result2 = await response2.json();
-        var percent = 100*result2.real;
-        percent = Math.floor(percent*1000)/1000;
-        
+        var classificationStr = "GPT-2 Output Detector: Failed to classify!";
+        if (result2.real > 0){
 
-        var classificationStr = "";
-        if (percent > 50){
-          classificationStr = "ML model: " + percent + "% Real (Human Generated)"
-        } else {
-          classificationStr = "ML model: " + (100 - percent) + "% Fake (Bot Generated)"
+          var percent = 100*result2.real;
+          percent = Math.floor(percent*1000)/1000;
+          
+
+          if (percent > 50){
+            classificationStr = "GPT-2 Output Detector: " + percent + "% Human-Generated"
+          } else {
+            classificationStr = "GPT-2 Output Detector: " + (100 - percent) + "% Machine-Generated"
+          }
         }
-        
+
+        var classificationStr_CML = "Failed to classify! (our model)";
+        var CML_percent = 100*result2.real_CML;
+        CML_percent = Math.floor(CML_percent*1000)/1000
+        if (CML_percent > 50){
+          classificationStr_CML = "Credibility Classifier: " + CML_percent + "% Real"
+        } else {
+          classificationStr_CML = "Credibility Classifier: " + (100 - CML_percent) + "% Fake"
+        }
+
+        var bot_CAP_percent = 100*result2.bot_CAP;
+        bot_CAP_percent = Math.floor(bot_CAP_percent*1000)/1000;
+        var bot_universal_score = 100*result2.bot_score;
+        bot_universal_score = Math.floor(bot_universal_score*1000)/1000;
+
+        tempArray[i].classification_Twitter =  'Botometer overall score of ' + bot_universal_score + '% and CAP score of ' + bot_CAP_percent + '%';
         tempArray[i].classification = classificationStr;
+        tempArray[i].classification_CML = classificationStr_CML;
         tempArray[i].news_content =  tempArray[i].news_content;
         tempArray[i].fullTextOfNews = tempArray[i].news_content;
         
 
       } catch (err) {
-        tempArray[i].classification = "Failed to classify"
+        tempArray[i].classification = "GPT-2 Output Detector: Failed to classify"
+        tempArray[i].classification_CML = "Credibility Classifier: Failed to classify";
       }
 
        
@@ -159,6 +184,8 @@ class App extends Component {
             news_content:  'Pulling from website...',
             news_title: arrayOfPosts[i].data.title,
             classification: 'Loading classification...',
+            classification_CML: 'Loading classification... (our model)',
+            classification_Twitter: 'N/A (Not Twitter Post)',
             description: "Pulling from website",
             userVotes: "User Votes: Loading"
           })
@@ -173,11 +200,12 @@ class App extends Component {
 
           for (var i=0; i<tempArray.length; i++){
             let postBody = {
-              urlOfContent: tempArray[i].websiteURL
+              urlOfContent: tempArray[i].websiteURL,
+              titleOfContent: tempArray[i].news_title
             };
 
             try {
-             let response = await fetch('http://localhost:5000/classify-texts', {
+             let response = await fetch(base_URL + 'classify-texts', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json;charset=utf-8'
@@ -188,20 +216,33 @@ class App extends Component {
             let result = await response.json();
             console.log("Real: " + result.real);
             console.log(data)
-            var percent = 100*result.real;
-            console.log("Real probability: " + percent)
-            percent = Math.floor(percent*1000)/1000;
-            
-
-            var classificationStr = "";
-            if (percent > 50){
-              classificationStr = "ML model: " + percent + "% Real (Human Generated)"
-            } else {
-              classificationStr = "ML model: " + (100 - percent) + "% Fake (Bot Generated)"
+            var classificationStr = "Failed to classify!";
+            if (result.real > 0){
+              var percent = 100*result.real;
+              console.log("Real probability: " + percent)
+              percent = Math.floor(percent*1000)/1000;
+              
+  
+              if (percent > 50){
+                classificationStr = "GPT-2 Output Detector: " + percent + "% Human-Generated"
+              } else {
+                classificationStr = "GPT-2 Output Detector: " + (100 - percent) + "% Machine-Generated"
+              }
+              console.log("ClassificationStr: " + classificationStr)
             }
-            console.log("ClassificationStr: " + classificationStr)
+
+            var classificationStr_CML = "Failed to classify! (our model)";
+            var CML_percent = 100*result.real_CML;
+            CML_percent = Math.floor(CML_percent*1000)/1000
+            if (CML_percent > 50){
+              classificationStr_CML = "Credibility Classifier: " + CML_percent + "% Real"
+            } else {
+              classificationStr_CML = "Credibility Classifier: " + (100 - CML_percent) + "% Fake"
+            }
+            
             
             tempArray[i].classification = classificationStr;
+            tempArray[i].classification_CML = classificationStr_CML;
             if (result.fullText.length>0){
               var fullTextStr = result.fullText.substring(0,Math.min(result.fullText.length,lengthCap));
               tempArray[i].news_content =  fullTextStr + "... [Click to read more]";
@@ -210,6 +251,7 @@ class App extends Component {
 
           } catch (err) {
             tempArray[i].classification = "Failed to classify"
+            tempArray[i].classification_CML = "Failed to classify via our model";
             tempArray[i].news_content = "Failed to load content. View website instead"
           }
 
@@ -296,6 +338,8 @@ class App extends Component {
               news_content:  'Description: ' +theResultsArray[i].description,
               news_title: theResultsArray[i].name,
               classification: 'Loading classification...',
+              classification_CML: 'Loading classification... (our model)',
+              classification_Twitter: 'N/A (Not Twitter Post)',
               description: theResultsArray[i].description,
               userVotes: 'User Votes: Loading...'
             })
@@ -324,11 +368,12 @@ class App extends Component {
           for (var i=0; i<tempArray.length; i++){
             if (newsType === "queryNews" && intendedQuery!=currentQuery) continue;
             let postBody = {
-              urlOfContent: tempArray[i].websiteURL
+              urlOfContent: tempArray[i].websiteURL,
+              titleOfContent: tempArray[i].news_title
             };
 
             try {
-             let response = await fetch('http://localhost:5000/classify-texts', {
+             let response = await fetch(base_URL + 'classify-texts', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json;charset=utf-8'
@@ -338,17 +383,33 @@ class App extends Component {
             
             let result = await response.json();
             console.log("Real: " + result.real);
-            var percent = 100*result.real;
-            percent = Math.floor(percent*1000)/1000;
+            console.log(data)
+            var classificationStr = "Failed to classify!";
+            if (result.real > 0){
+              var percent = 100*result.real;
+              console.log("Real probability: " + percent)
+              percent = Math.floor(percent*1000)/1000;
+              
+  
+              if (percent > 50){
+                classificationStr = "GPT-2 Output Detector: " + percent + "% Human-Generated"
+              } else {
+                classificationStr = "GPT-2 Output Detector: " + (100 - percent) + "% Machine-Generated"
+              }
+              console.log("ClassificationStr: " + classificationStr)
+            }
 
-            var classificationStr = "";
-            if (percent > 50){
-              classificationStr = "ML model: " + percent + "% Real (Human Generated)"
+            var classificationStr_CML = "Failed to classify! (our model)";
+            var CML_percent = 100*result.real_CML;
+            CML_percent = Math.floor(CML_percent*1000)/1000
+            if (CML_percent > 50){
+              classificationStr_CML = "Credibility Classifier: " + CML_percent + "% Potentially Credible"
             } else {
-              classificationStr = "ML model: " + (100 - percent) + "% Fake (Bot Generated)"
+              classificationStr_CML = "Credibility Classifier: " + (100 - CML_percent) + "% Potentially Misleading"
             }
             
             tempArray[i].classification = classificationStr;
+            tempArray[i].classification_CML = classificationStr_CML;
             if (result.fullText.length>0){
               var fullTextStr = result.fullText.substring(0,Math.min(result.fullText.length,lengthCap));
               tempArray[i].news_content =  fullTextStr + "... [Click to read more]";
@@ -359,7 +420,7 @@ class App extends Component {
             tempArray[i].news_content = "Only partial content... " + tempArray[i].news_content
             tempArray[i].fullTextOfNews = "[PARTIAL]: " + tempArray[i].news_content
             tempArray[i].classification = "Failed to load classification"
-            
+            tempArray[i].classification_CML = "Failed to load classification (via our model)"
           }
 
 
@@ -448,16 +509,19 @@ class App extends Component {
       
     <div>
 
-    <Navbar bg="light" variant="light">
-              <Navbar.Brand href="#home">CoVerifi</Navbar.Brand>
-              <Nav className="mr-auto">
-                  <Nav.Link href="#about">About</Nav.Link>
-              </Nav>
-              <Form inline onSubmit={handleSubmit}>
-                  <FormControl type="text" placeholder="Search here!" className="mr-sm-2" ref="search" type="search" onChange={changeHandler}/>
-                  <Button variant="outline-primary" type="submit" onSubmit={handleSubmit}>Search</Button>
-              </Form>
-    </Navbar>
+      <Navbar bg="light" variant="light">
+                <Navbar.Brand href="#home">CoVerifi</Navbar.Brand>
+                <Nav className="mr-auto">
+                    {/* <Nav.Link href="#about">About</Nav.Link> */}
+                </Nav>
+                <Form inline onSubmit={handleSubmit}>
+                    <FormControl type="text" placeholder="Search here!" className="mr-sm-2" ref="search" type="search" onChange={changeHandler}/>
+                    <Button variant="outline-primary" type="submit" onSubmit={handleSubmit}>Search</Button>
+                </Form>
+      </Navbar>
+
+      
+
         
         <Nav variant="nav  d-md-none "   defaultActiveKey={"covidNews"} onSelect={handleSelect}>
           <Nav.Item>
@@ -474,6 +538,7 @@ class App extends Component {
           </Nav.Item>
           
       </Nav> 
+      
       
       
 
@@ -493,13 +558,44 @@ class App extends Component {
             </Nav.Item>
           
           </Nav>  
+        
         <div className="main-body">
+          <Jumbotron fluid>
+          <Container>
+            <h1>About CoVerifi</h1>
+            <p>
+              CoVerifi provides a credibility-focused news feed from Bing News, Reddit, and Twitter. Each piece of content has
+              user vote credibility ratings, the classification given by our machine learning model, and the classification given by a neural fake
+              text detection model. For Twitter news, we provide Botometer's bot score for the Twitter user (from 0 to 1) and the CAP score, which represents
+              "the probability that an account with the given score or higher is automated".
+            </p>
+            <p>
+              Our machine learning model was trained on COVID-19-specific news article titles with the goal of classifying new COVID-19-specific fake news
+              and achieved approximately 93% accuracy when using a 75% / 25% training / testing split for our input dataset. When tested on an unrelated
+              dataset to test the model's effectiveness on new datasets, it achieved approximately 75% accuracy.
+              
+              The neural fake text detection model, present on all of the site's content, 
+              was trained on fake text produced by a text generation model called GPT-2. We apply the intuition that fake text generated
+              by different text generation models may have certain similarities, but this may not generalize well to all forms of fake text.
+            </p>
+
+            <p>
+              <b>Disclaimer:</b> Given the above accuracy descriptions for our models, you should not take our classifications as final, but rather, as
+              an additional piece of information when deciding the accuracy of a piece of content on your own. The neural fake text detector may
+              perform worse on text generated by different language model types. While we have implemented IP-based vote limiting,
+              the "user votes" could be skewed by malicious voters. Furthermore, our model's 75% accuracy is not sufficient to rely on as a sole tool. Nonetheless,
+              we believe our metrics provide a useful "signal" for helping you decide the accuracy of a piece of news content.
+            </p>
+          </Container>
+        </Jumbotron>
           {[...this.state.users].map((user, index) => {
             let name = `${user.name}`
             let handle = `@${user.name}`
             let image = user.image
             let news_content = user.news_content
             let classification= user.classification
+            let classification_CML = user.classification_CML
+            let classification_Twitter = user.classification_Twitter
             let news_title = user.news_title
             let websiteURL = user.websiteURL
             let showContent = user.showContent
@@ -512,7 +608,9 @@ class App extends Component {
                 handle={handle}
                 news_content={news_content}
                 image={image}
+                classification_CML={classification_CML}
                 classification={classification}
+                classification_Twitter={classification_Twitter}
                 news_title = {news_title}
                 websiteURL = {websiteURL}
                 showContent = {showContent} 
