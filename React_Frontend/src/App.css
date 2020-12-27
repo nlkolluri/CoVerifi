@@ -32,6 +32,7 @@
   flex-direction: column;
   background-color: #24313d;
   min-height: 80rem;
+  min-width: 90%;
 
 }
 
@@ -91,7 +92,7 @@
   /* width:flex;
   height:48px; */
   width: flex;
-  height: 55px;
+  height: 120px;
 }
 
 .name {
@@ -115,7 +116,7 @@
   flex-direction: row;
   margin-left: 15px;
   margin-top: 0px;
-  margin-bottom: 1%;
+  margin-bottom: 4%;
   height: 10px;
   font-size: 20px;
   font-weight: 500;
